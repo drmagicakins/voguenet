@@ -1,0 +1,38 @@
+{% extends "base.html" %} {% block content %}
+<div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+  <h1 class="text-2xl font-bold mb-4">👤 My Profile</h1>
+  <div id="userInfo" class="text-gray-700 space-y-2"></div>
+</div>
+
+<script>
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = "/login/";
+  }
+
+  async function fetchUser() {
+    const res = await fetch("/api/accounts/me/", {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    });
+
+    const container = document.getElementById("userInfo");
+
+    if (res.ok) {
+      const user = await res.json();
+      container.innerHTML = `
+        <p><strong>Username:</strong> ${user.username}</p>
+        <p><strong>Email:</strong> ${user.email}</p>
+        <p><strong>Phone:</strong> ${user.phone}</p>
+      `;
+    } else {
+      container.innerHTML =
+        "<p class='text-red-600'>Could not load user profile.</p>";
+    }
+  }
+
+  fetchUser();
+</script>
+{% endblock %}
